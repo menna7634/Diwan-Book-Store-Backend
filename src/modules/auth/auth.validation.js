@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const { BadRequestError } = require("../../shared/utils/ApiError");
-const {password} = require('../../shared/utils/validators');
+const { password } = require('../../shared/utils/validators');
 const LoginInputValidator = function () {
   const schema = Joi.object({
     email: Joi.string().email().lowercase().required(),
@@ -30,7 +30,7 @@ const RegisterInputValidator = function () {
     }).required()
   }).required();
   return async (req, res, next) => {
-    
+
     const { error, value } = schema.validate(req.body, { abortEarly: false });
     if (error) throw new BadRequestError(error.details);
     req.body = value;
@@ -38,7 +38,21 @@ const RegisterInputValidator = function () {
   };
 };
 
+const RefreshInputValidator = function () {
+  const schema = Joi.object({
+    refresh_token: Joi.string().required()
+  }).required();
+  return async (req, res, next) => {
+    const {error, value} = schema.validate(req.body);
+    if(error) throw new BadRequestError(error.details);
+    req.body = value;
+    next();
+  };
+};
+
+
 module.exports = {
   LoginInputValidator,
   RegisterInputValidator,
+  RefreshInputValidator,
 };
