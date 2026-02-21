@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const config = require('../shared/config/config');
+const config = require('../shared/config');
 
 const connectDB = async (expectedCollections = []) => {
   try {
