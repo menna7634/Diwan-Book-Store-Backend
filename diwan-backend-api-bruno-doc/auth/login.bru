@@ -1,0 +1,29 @@
+meta {
+  name: login
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/auth/login
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "john@gmail.com",
+    "password": "aA@12345689"
+  }
+}
+
+script:post-response {
+  bru.setEnvVar("access_token", res.body.access_token)
+  
+  bru.setEnvVar("refresh_token", res.body.refresh_token)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
