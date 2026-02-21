@@ -1,6 +1,6 @@
 const app = require('./app');
 const connectDB = require('./database/connection');
-const config = require('./shared/config/config');
+const config = require('./shared/config');
 
 const startServer = async () => {
   try {
