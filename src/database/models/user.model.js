@@ -58,7 +58,6 @@ const userSchema = new mongoose.Schema(
       },
       default: 'user',
     },
-    isVerified: { type: Boolean, default: false },
     address: addressSchema,
   },
   { timestamps: true }
