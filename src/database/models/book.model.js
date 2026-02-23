@@ -3,7 +3,7 @@ const {
   isPositiveMoney,
   isInteger,
   URL_REGEX,
-} = require('../../shared/util/validators');
+} = require('../../shared/utils/validators');
 const bookSchema = new mongoose.Schema(
   {
     author_id: {

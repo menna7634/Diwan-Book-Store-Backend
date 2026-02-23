@@ -1,0 +1,20 @@
+meta {
+  name: deleteCategory
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{base_url}}/categories/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: "CATEGORY_ID"
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

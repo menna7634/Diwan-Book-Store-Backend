@@ -39,7 +39,6 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: [true, 'Email is required'],
-      unique: true,
       lowercase: true,
       trim: true,
       match: [EMAIL_REGEX, 'Please provide a valid email address'],
@@ -58,7 +57,6 @@ const userSchema = new mongoose.Schema(
       },
       default: 'user',
     },
-    isVerified: { type: Boolean, default: false },
     address: addressSchema,
   },
   { timestamps: true }
