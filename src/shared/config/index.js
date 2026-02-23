@@ -18,6 +18,10 @@ const envSchema = Joi.object({
   JWT_ACCESS_EXPIRATION_MINUTES: Joi.number().default(30),
 
   JWT_REFRESH_EXPIRATION_DAYS: Joi.number().default(30),
+
+  CLOUDINARY_CLOUD_NAME: Joi.string().required().description('Cloudinary cloud name'),
+  CLOUDINARY_API_KEY: Joi.string().required().description('Cloudinary API key'),
+  CLOUDINARY_API_SECRET: Joi.string().required().description('Cloudinary API secret'),
 }).unknown();
 
 const { value: envVars, error } = envSchema.validate(process.env, {
@@ -40,6 +44,12 @@ const config = {
     secret: envVars.JWT_SECRET,
     accessExpirationMinutes: envVars.JWT_ACCESS_EXPIRATION_MINUTES,
     refreshExpirationDays: envVars.JWT_REFRESH_EXPIRATION_DAYS,
+  },
+
+  cloudinary: {
+    cloudName: envVars.CLOUDINARY_CLOUD_NAME,
+    apiKey: envVars.CLOUDINARY_API_KEY,
+    apiSecret: envVars.CLOUDINARY_API_SECRET,
   },
 };
 
