@@ -16,6 +16,7 @@ const login = async ({ email, password }) => {
 
   // create access_token and refresh_tokens
   const jwtPayLoad = {
+    id: user._id,
     email: user.email,
     role: user.role
   };
@@ -61,7 +62,37 @@ const register = async (userData) => {
   return user;
 };
 
+const refreshAccessToken = async (refresh_token) => {
+  let payload;
+  try {
+    payload = jwt.verify(refresh_token, config.jwt.secret);
+  } catch (e) {
+    throw new UnauthorizedError(e.message);
+  }
+  const userAuth = await UserAuth.findOne({ user: payload.id });
+  if (refresh_token !== userAuth.refresh_token) {
+    throw new UnauthorizedError({ type: "invalid_token", message: "non matching refresh token" });
+  }
+
+  // generate a new access token
+  const newPayload = {
+    email: payload.email,
+    id: payload.id,
+    role: payload.role,
+  };
+  const accessToken = jwt.sign(newPayload, config.jwt.secret, { expiresIn: config.jwt.accessExpirationMinutes + 'm' });
+  return accessToken;
+};
+const logout = async (userId) => {
+  const userAuth = await UserAuth.findOne({ user: userId });
+  if (!userAuth) throw new UnauthorizedError({ type: "not_found" });
+  userAuth.refresh_token = null;
+  userAuth.save();
+};
+
 module.exports = {
   login,
   register,
+  refreshAccessToken,
+  logout,
 };
