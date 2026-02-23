@@ -3,10 +3,7 @@ const router = express.Router();
 const authorsValidators = require('./authors.validation');
 const authorsController = require('./authors.controller');
 
-router.get('/', async (req, res) => {
-  const authors = await authorsController.listAuthors();
-  res.json(authors);
-});
+router.get('/', authorsController.listAuthors);
 
 router.post(
   '/',
