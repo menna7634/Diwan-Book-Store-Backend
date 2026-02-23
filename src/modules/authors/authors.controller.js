@@ -1,9 +1,25 @@
 const Author = require('../../database/models/author.model');
 const { BadRequestError, NotFoundError } = require('../../shared/utils/ApiError');
+const { paginate } = require('../../shared/utils/pagination');
 
-const listAuthors = async () => {
-  const authors = await Author.find().sort({ name: 1 });
-  return authors;
+const listAuthors = async (req, res, next) => {
+  try {
+    const { page: pageRaw, limit: limitRaw } = req.query;
+
+    const page = Number(pageRaw) || 1;
+    const limit = Number(limitRaw) || 10;
+
+    const result = await paginate(Author, {}, {
+      page,
+      limit,
+      sort: 'name',
+      lean: true,
+    });
+
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
 };
 
 const createAuthor = async ({ name, bio }) => {
