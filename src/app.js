@@ -1,10 +1,19 @@
 const pinoHttp = require('pino-http');
 const express = require('express');
+const cors = require('cors');
 const logger = require('./shared/utils/logger');
 const { WebError } = require('./shared/utils/ApiError');
+const config = require('./shared/config');
 
 const app = express();
-
+const corsOptions = {
+  origin: config.frontendUrl, // Use an environment variable!
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  maxAge: 86400 
+};
+app.use(cors(corsOptions));
 app.use(pinoHttp({ logger }));
 
 app.use(express.json());
