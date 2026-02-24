@@ -1,4 +1,4 @@
-const Cart = require('./cart.model');
+const Cart = require('../../database/models/cart.model');
 const {
   NotFoundError,
   BadRequestError,

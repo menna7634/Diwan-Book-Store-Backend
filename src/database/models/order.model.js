@@ -63,12 +63,6 @@ const shippingSchema = new mongoose.Schema(
 // the main schema
 const orderSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      required: [true, 'Order name is required'],
-      trim: true,
-      maxlength: [200, 'Order name too long'],
-    },
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
