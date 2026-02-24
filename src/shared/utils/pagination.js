@@ -1,8 +1,8 @@
-// paginate for db pagination but paginate array for memory pagination
+// paginateArray for db pagination but paginate array for memory pagination
 const paginate = async (Model, filter = {}, options = {}) => {
   let page = parseInt(options.page);
   let limit = parseInt(options.limit);
-  // i want to make some validations like validate page and limit range
+  //  some validations like validate page and limit range
   page = page > 0 ? page : 1;
   limit = limit > 0 ? limit : 10;
 
