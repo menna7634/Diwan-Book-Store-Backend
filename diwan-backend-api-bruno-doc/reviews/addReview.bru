@@ -1,0 +1,19 @@
+meta {
+  name: addReview
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/reviews
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "book_id": "BOOK_ID",
+    "rating": 5,
+    "comment": "This book was amazing"
+  }
+}
