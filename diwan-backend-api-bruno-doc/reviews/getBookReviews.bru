@@ -1,0 +1,17 @@
+meta {
+  name: getBookReviews
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/reviews?book_id=BOOK_ID&page=1&limit=10
+  body: none
+  auth: none
+}
+
+params:query {
+  book_id: BOOK_ID
+  page: 1
+  limit: 10
+}

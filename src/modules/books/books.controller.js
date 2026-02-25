@@ -83,7 +83,7 @@ const listBooks = async (req, res, next) => {
     }
 
    
-   //lean: true means: return plain JS objects, not full Mongoose documents. Faster + less memory
+    //lean: true means: return plain JS objects, not full Mongoose documents. Faster + less memory
     const paginateOptions = { page, limit, lean: true };
     if (useSearch) {
       //add a field named score to each returned book, and fill it with Mongo’s textScore value.
