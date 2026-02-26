@@ -1,0 +1,15 @@
+meta {
+  name: verify email
+  type: http
+  seq: 5
+}
+
+get {
+  url: auth/verify
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

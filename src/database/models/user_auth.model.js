@@ -12,6 +12,9 @@ const authSchema = new mongoose.Schema({
   is_verified: {
     type: Boolean,
     required: true,
+  },
+  verification_token: {
+    type: String
   }
 });
 

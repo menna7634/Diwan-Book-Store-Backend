@@ -1,0 +1,22 @@
+meta {
+  name: update profile
+  type: http
+  seq: 2
+}
+
+patch {
+  url: {{base_url}}/profile/
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+     "firstname": "Helo" 
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
