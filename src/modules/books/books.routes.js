@@ -29,6 +29,8 @@ router.patch(
 
 router.delete(
   '/:id',
+  IsAuthenticated(),
+  IsAdmin(),
   booksValidators.validateBookIdParam,
   booksController.deleteBook
 );
