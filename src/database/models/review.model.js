@@ -37,7 +37,7 @@ reviewSchema.index({ user_id: 1, book_id: 1 }, { unique: true }); // one review 
 //Static
 reviewSchema.statics.getAverageRating = function (bookId) {
   return this.aggregate([
-    { $match: { book_id: bookId } },
+    { $match: { book_id: new mongoose.Types.ObjectId(bookId) } },
     {
       $group: {
         _id: '$book_id',

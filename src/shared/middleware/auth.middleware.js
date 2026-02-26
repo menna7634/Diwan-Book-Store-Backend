@@ -24,7 +24,9 @@ const IsAuthenticated = function () {
 // This middleware, to be used after an IsAuthenticated middleware, else it wouldn't work
 const IsAdmin = function () {
   return async (req, res, next) => {
-    if (req.user.role === "admin") throw new UnauthorizedError("insufficient previliges");
+    if (!req.user || req.user.role !== "admin") {
+      throw new UnauthorizedError("insufficient previliges");
+    }
     next();
   };
 };
