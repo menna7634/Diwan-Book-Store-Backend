@@ -10,6 +10,9 @@ const login = async ({ email, password }) => {
   const user = await User.findOne({ email: email }).select('+password');
   if (!user) throw new UnauthorizedError("Email or Password are wrong");
   console.log(user);
+  // check if email is verified
+  const userAuth = await UserAuth.findOne({ user: user._id });
+  if (!userAuth.is_verified) throw new UnauthorizedError("Email isn't verified");
   // check password
   const result = await bcrypt.compare(password, user.password);
   if (!result) throw new UnauthorizedError("Email or Password are wrong");
@@ -41,7 +44,7 @@ const register = async (userData) => {
   //make a transaction
   const session = await mongoose.startSession();
 
-  const user = await session.withTransaction(async () => {
+  const [user, userAuth] = await session.withTransaction(async () => {
     // check if the email already exists
     const existingUser = await User.findOne({ email: userData.email });
     if (existingUser) throw new BadRequestError("Email already used");
@@ -51,13 +54,30 @@ const register = async (userData) => {
     const [newUser] = await User.create([userData], { session });
 
     // create user auth for the new user
-    await UserAuth.create([{
+    const [userAuth] = await UserAuth.create([{
       user: newUser.id,
-      is_verified: false,
+      is_verified: !config.emailVerification.isEnabled,
     }], { session });
     // just that
-    return newUser;
+    return [newUser, userAuth];
   });
+
+  // generation a verification token
+
+  if (config.emailVerification.isEnabled) {
+    const verifcationTokenPayload = {
+      id: user.id,
+      type: "email_verification"
+    };
+
+    const verificationToken = jwt.sign(verifcationTokenPayload, config.jwt.secret,
+      { expiresIn: config.emailVerification.tokenExpirationHours+"h", }
+    );
+    userAuth.verification_token = verificationToken;
+    await userAuth.save();
+    //send the token via email
+    
+  }
 
   return user;
 };
@@ -90,9 +110,30 @@ const logout = async (userId) => {
   userAuth.save();
 };
 
+const verifyEmail = async (token) => {
+  let payload;
+  try {
+    payload = jwt.verify(token, config.jwt.secret);
+
+  } catch (e) {
+    throw new UnauthorizedError({ type: "invalid_token", detail: e });
+  }
+
+  const userAuth = await UserAuth.findOne({ user: payload.id });
+  if (!userAuth || userAuth.verification_token !== token) {
+    throw new UnauthorizedError({ type: "invalid_token" });
+  }
+
+  userAuth.is_verified = true;
+  userAuth.verification_token = undefined;
+  await userAuth.save();
+  return userAuth;
+};
+
 module.exports = {
   login,
   register,
   refreshAccessToken,
   logout,
+  verifyEmail,
 };
