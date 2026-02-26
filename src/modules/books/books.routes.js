@@ -6,6 +6,7 @@ const booksMiddleware = require('./books.middleware');
 const { IsAuthenticated, IsAdmin } = require('../../shared/middleware/auth.middleware');
 
 router.get('/', booksController.listBooks);
+router.get('/:id', booksValidators.validateBookIdParam, booksController.getBookById);
 
 router.post(
   '/',

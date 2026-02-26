@@ -162,6 +162,17 @@ const updateBook = async (req, res) => {
   res.json(updatedBook);
 };
 
+const getBookById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const book = await Book.findById(id).lean();
+    if (!book) throw new NotFoundError('Book not found');
+    res.json(book);
+  } catch (err) {
+    next(err);
+  }
+};
+
 const deleteBook = async (req, res) => {
   const { id } = req.params;
   const book = await Book.findById(id);
@@ -172,6 +183,7 @@ const deleteBook = async (req, res) => {
 
 module.exports = {
   listBooks,
+  getBookById,
   createBook,
   updateBook,
   deleteBook,
