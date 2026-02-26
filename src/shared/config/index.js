@@ -19,6 +19,9 @@ const envSchema = Joi.object({
 
   JWT_REFRESH_EXPIRATION_DAYS: Joi.number().default(30),
 
+  ENABLE_EMAIL_VERIFICATION: Joi.boolean().default(false),
+  VERIFICATION_TOKEN_EXPIRATION_HOURS: Joi.number().integer().default(24),
+
   CLOUDINARY_CLOUD_NAME: Joi.string().required().description('Cloudinary cloud name'),
   CLOUDINARY_API_KEY: Joi.string().required().description('Cloudinary API key'),
   CLOUDINARY_API_SECRET: Joi.string().required().description('Cloudinary API secret'),
@@ -44,6 +47,11 @@ const config = {
     secret: envVars.JWT_SECRET,
     accessExpirationMinutes: envVars.JWT_ACCESS_EXPIRATION_MINUTES,
     refreshExpirationDays: envVars.JWT_REFRESH_EXPIRATION_DAYS,
+  },
+
+  emailVerification: {
+    isEnabled: envVars.ENABLE_EMAIL_VERIFICATION,
+    tokenExpirationHours: envVars.VERIFICATION_TOKEN_EXPIRATION_HOURS,
   },
 
   cloudinary: {
