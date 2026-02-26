@@ -21,7 +21,17 @@ const envSchema = Joi.object({
 
   ENABLE_EMAIL_VERIFICATION: Joi.boolean().default(false),
   VERIFICATION_TOKEN_EXPIRATION_HOURS: Joi.number().integer().default(24),
+  MAIL_GMAIL_USER: Joi.string().when('ENABLE_EMAIL_VERIFICATION', {
+    is: true,
+    then: Joi.required(),
+    otherwise: Joi.optional()
+  }),
 
+  MAIL_APP_PASSWORD: Joi.string().when('ENABLE_EMAIL_VERIFICATION', {
+    is: true,
+    then: Joi.required(),
+    otherwise: Joi.optional()
+  }),
   CLOUDINARY_CLOUD_NAME: Joi.string().required().description('Cloudinary cloud name'),
   CLOUDINARY_API_KEY: Joi.string().required().description('Cloudinary API key'),
   CLOUDINARY_API_SECRET: Joi.string().required().description('Cloudinary API secret'),
@@ -53,7 +63,10 @@ const config = {
     isEnabled: envVars.ENABLE_EMAIL_VERIFICATION,
     tokenExpirationHours: envVars.VERIFICATION_TOKEN_EXPIRATION_HOURS,
   },
-
+  mail: {
+    gmailUser: envVars.MAIL_GMAIL_USER,
+    appPassword: envVars.MAIL_APP_PASSWORD,
+  },
   cloudinary: {
     cloudName: envVars.CLOUDINARY_CLOUD_NAME,
     apiKey: envVars.CLOUDINARY_API_KEY,
