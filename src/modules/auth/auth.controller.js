@@ -5,6 +5,7 @@ const config = require('../../shared/config');
 const UserAuth = require('../../database/models/user_auth.model');
 const User = require('../../database/models/user.model');
 const { UnauthorizedError, BadRequestError } = require('../../shared/utils/ApiError');
+const MailService = require('../../shared/services/mail.service');
 
 const login = async ({ email, password }) => {
   const user = await User.findOne({ email: email }).select('+password');
@@ -76,7 +77,7 @@ const register = async (userData) => {
     userAuth.verification_token = verificationToken;
     await userAuth.save();
     //send the token via email
-    
+    MailService.sendVerifcationEmail(user.email, verificationToken);
   }
 
   return user;
