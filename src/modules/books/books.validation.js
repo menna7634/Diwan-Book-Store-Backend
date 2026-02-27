@@ -15,6 +15,7 @@ const createSchema = Joi.object({
     .required()
     .messages({ 'string.pattern.base': 'Invalid category ID' }),
   book_title: Joi.string().trim().min(1).max(300).required(),
+  description: Joi.string().trim().max(2000).optional(),
   book_cover_url: Joi.string()
     .trim()
     .pattern(URL_REGEX)
@@ -33,6 +34,7 @@ const updateSchema = Joi.object({
     .min(1)
     .messages({ 'string.pattern.base': 'Invalid category ID' }),
   book_title: Joi.string().trim().min(1).max(300),
+  description: Joi.string().trim().max(2000),
   book_cover_url: Joi.string()
     .trim()
     .pattern(URL_REGEX)
