@@ -123,6 +123,7 @@ const createBook = async (req, res) => {
     author_id: body.author_id,
     categories: body.categories,
     book_title: body.book_title,
+    description: body.description || '',
     book_cover_url: body.book_cover_url || undefined,
     price: body.price,
     stock: body.stock ?? 0,
