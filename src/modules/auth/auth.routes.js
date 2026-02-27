@@ -3,6 +3,7 @@ const router = express.Router();
 const authValidators = require('./auth.validation');
 const authController = require('./auth.controller');
 const { IsAuthenticated } = require("../../shared/middleware/auth.middleware");
+const { BadRequestError } = require("../../shared/utils/ApiError");
 
 
 
@@ -37,4 +38,13 @@ router.post('/logout', IsAuthenticated(),
   }
 );
 
+router.get('/verify',
+  async (req, res) => {
+    const { token } = req.query;
+    if (!token) throw new BadRequestError({ "type": "missing_token" });
+    await authController.verifyEmail(token);
+
+    return res.json({ "message": "Email is verified" });
+  }
+);
 module.exports = router;
