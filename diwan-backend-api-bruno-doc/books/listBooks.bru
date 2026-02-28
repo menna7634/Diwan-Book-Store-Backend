@@ -1,0 +1,23 @@
+meta {
+  name: listBooks
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/books
+  body: none
+  auth: none
+}
+
+params:query {
+  page: 1
+  limit: 10
+  search: 
+  sort: createdAt
+  order: desc
+  minPrice: 
+  maxPrice: 
+  authorIds: 
+  categoryIds: 
+}

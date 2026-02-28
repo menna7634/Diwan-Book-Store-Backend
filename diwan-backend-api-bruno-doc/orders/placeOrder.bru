@@ -1,0 +1,26 @@
+meta {
+  name: placeOrder
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/order
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "payment_method": "cash_on_delivery",
+    "shipping_details": {
+      "fullName": "John Doe",
+      "phone": "01012345678",
+      "street": "123 Nile Street",
+      "city": "Cairo",
+      "state": "Cairo",
+      "country": "Egypt",
+      "zipCode": "11511"
+    }
+  }
+}

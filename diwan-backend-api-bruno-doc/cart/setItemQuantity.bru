@@ -1,0 +1,21 @@
+meta {
+  name: setItemQuantity
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{base_url}}/cart/items/:bookId
+  body: json
+  auth: inherit
+}
+
+params:path {
+  bookId: BOOK_ID
+}
+
+body:json {
+  {
+    "quantity": 3
+  }
+}

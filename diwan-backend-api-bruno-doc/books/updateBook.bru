@@ -6,7 +6,11 @@ meta {
 
 patch {
   url: {{base_url}}/books/:id
+<<<<<<< HEAD
   body: multipart-form
+=======
+  body: json
+>>>>>>> 4f2f7c3e232e2ce3c363bc05f455c1c8d9b1fa46
   auth: inherit
 }
 
@@ -14,6 +18,7 @@ params:path {
   id: BOOK_ID
 }
 
+<<<<<<< HEAD
 body:multipart-form {
   book_title: Updated Book Title
   price: 34.99
@@ -24,4 +29,12 @@ body:multipart-form {
 settings {
   encodeUrl: true
   timeout: 0
+=======
+body:json {
+  {
+    "book_title": "Updated Book Title",
+    "price": 29.99,
+    "stock": 100
+  }
+>>>>>>> 4f2f7c3e232e2ce3c363bc05f455c1c8d9b1fa46
 }

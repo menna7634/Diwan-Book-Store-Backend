@@ -6,6 +6,7 @@ meta {
 
 post {
   url: {{base_url}}/books
+<<<<<<< HEAD
   body: multipart-form
   auth: inherit
 }
@@ -23,4 +24,19 @@ body:multipart-form {
 settings {
   encodeUrl: true
   timeout: 0
+=======
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "author_id": "AUTHOR_ID",
+    "categories": ["CATEGORY_ID"],
+    "book_title": "The Great Gatsby",
+    "description": "A classic novel set in the Jazz Age.",
+    "price": 24.99,
+    "stock": 50
+  }
+>>>>>>> 4f2f7c3e232e2ce3c363bc05f455c1c8d9b1fa46
 }
