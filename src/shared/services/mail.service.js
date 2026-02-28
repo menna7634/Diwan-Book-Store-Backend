@@ -43,7 +43,7 @@ class MailService {
   }
 
   async sendResetPasswordEmail(toEmail, token) {
-    const verificationUrl = `${config.frontendUrl}/change-password?token=${token}`;
+    const verificationUrl = `${config.frontendUrl}/reset-password?token=${token}`;
     const mailOptions = {
       from: this.sender,
       to: toEmail,
