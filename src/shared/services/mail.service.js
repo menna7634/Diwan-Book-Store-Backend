@@ -1,6 +1,6 @@
 const config = require('../config');
 const nodemailer = require('nodemailer');
-const logger = require('../utils/logger').child({module: "mail.service"});
+const logger = require('../utils/logger').child({ module: "mail.service" });
 
 class MailService {
   constructor() {
@@ -35,10 +35,38 @@ class MailService {
 
     try {
       const result = await this.transporter.sendMail(mailOptions);
-      logger.info({result}, "Email sent successfully:");
+      logger.info({ result }, "Email sent successfully:");
       return result;
     } catch (error) {
-      logger.error({error}, "Failed to send verifcation email");
+      logger.error({ error }, "Failed to send verifcation email");
+    }
+  }
+
+  async sendResetPasswordEmail(toEmail, token) {
+    const verificationUrl = `${config.frontendUrl}/reset-password?token=${token}`;
+    const mailOptions = {
+      from: this.sender,
+      to: toEmail,
+      subject: "Reset your Password",
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #eee;">
+          <h2 style="color: #333;">Hello</h2>
+          <p>Click the button below to reset your password:</p>
+          <a href="${verificationUrl}" 
+             style="background: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+            Reset Password
+          </a>
+          <p>If the button doesn't work, use this link: <br> ${verificationUrl}</p>
+        </div>
+      `,
+    };
+
+    try {
+      const result = await this.transporter.sendMail(mailOptions);
+      logger.info({ result }, "Email sent successfully:");
+      return result;
+    } catch (error) {
+      logger.error({ error }, "Failed to send verifcation email");
     }
   }
 }
