@@ -5,8 +5,35 @@ const cors = require('cors');
 const logger = require('./shared/utils/logger');
 const { WebError } = require('./shared/utils/ApiError');
 const config = require('./shared/config');
+const helmet = require('helmet');
 
 const app = express();
+// helmet for scp (these config were AI generated)
+const helmetOptions = {
+  // 1. Disable CSP if you aren't serving HTML/Assets
+  // This prevents overhead and "Refused to execute script" errors in browsers
+  contentSecurityPolicy: false,
+
+  // 2. Cross-Origin Resource Policy
+  // Prevents other sites from reading your API responses in certain contexts
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+
+  // 3. Strict Transport Security (HSTS)
+  // CRITICAL for APIs: ensures the mobile app/frontend always uses HTTPS
+  hsts: config.env ? {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  } : false,
+
+  // 4. Frameguard
+  // Even for APIs, this prevents your JSON from being loaded in an iframe
+  frameguard: { action: "deny" },
+};
+app.use(helmet(helmetOptions));
+
+// cors for cors
+
 const corsOptions = {
   origin: config.frontendUrl, // Use an environment variable!
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
