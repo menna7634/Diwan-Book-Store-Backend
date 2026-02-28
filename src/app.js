@@ -8,6 +8,7 @@ const config = require('./shared/config');
 const helmet = require('helmet');
 
 const app = express();
+app.set('etag', false);
 // helmet for scp (these config were AI generated)
 const helmetOptions = {
   // 1. Disable CSP if you aren't serving HTML/Assets
@@ -37,7 +38,7 @@ app.use(helmet(helmetOptions));
 const corsOptions = {
   origin: config.frontendUrl, // Use an environment variable!
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma'],
   credentials: true,
   maxAge: 86400,
 };
@@ -56,8 +57,6 @@ app.get('/', (req, res) => res.send('API is running'));
 
 // eslint-disable-next-line no-unused-vars
 app.use((error, req, res, next) => {
-  console.error('🔴 ERROR:', error.message);
-  console.error('🔴 STACK:', error.stack);
   if (error instanceof WebError) {
     res.status(error.statusCode).json({
       message: error.message,
