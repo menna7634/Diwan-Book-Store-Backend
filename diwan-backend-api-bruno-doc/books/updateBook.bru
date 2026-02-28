@@ -1,0 +1,27 @@
+meta {
+  name: updateBook
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{base_url}}/books/:id
+  body: multipart-form
+  auth: inherit
+}
+
+params:path {
+  id: BOOK_ID
+}
+
+body:multipart-form {
+  book_title: Updated Book Title
+  price: 34.99
+  stock: 5
+  cover: 
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

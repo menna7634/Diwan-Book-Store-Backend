@@ -1,0 +1,26 @@
+meta {
+  name: createBook
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/books
+  body: multipart-form
+  auth: inherit
+}
+
+body:multipart-form {
+  author_id: AUTHOR_ID
+  categories: CATEGORY_ID_1,CATEGORY_ID_2
+  book_title: Book Title
+  description: Optional description
+  price: 29.99
+  stock: 10
+  cover: 
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

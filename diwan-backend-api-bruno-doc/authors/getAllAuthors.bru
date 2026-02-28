@@ -1,0 +1,21 @@
+meta {
+  name: getAllAuthors
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/authors?page=1&limit=10
+  body: none
+  auth: inherit
+}
+
+params:query {
+  page: 1
+  limit: 10
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

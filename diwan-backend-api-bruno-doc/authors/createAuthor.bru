@@ -1,0 +1,23 @@
+meta {
+  name: createAuthor
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/authors
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Author Name",
+    "bio": "Optional short bio"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
