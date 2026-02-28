@@ -1,4 +1,4 @@
-const BadRequestError = require('../../shared/utils/ApiError');
+const {BadRequestError} = require('../../shared/utils/ApiError');
 const Joi = require('joi');
 
 const mongoId = Joi.string()
@@ -29,6 +29,7 @@ const PlaceOrderValidator = () =>
         city: Joi.string().trim().required(),
         state: Joi.string().trim(),
         country: Joi.string().trim().required(),
+        zipCode: Joi.string().trim().required(),
       }).required(),
     })
   );
