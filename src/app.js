@@ -25,6 +25,8 @@ app.get('/', (req, res) => res.send('API is running'));
 
 // eslint-disable-next-line no-unused-vars
 app.use((error, req, res, next) => {
+  console.error('🔴 ERROR:', error.message);
+  console.error('🔴 STACK:', error.stack);
   if (error instanceof WebError) {
     res.status(error.statusCode).json({
       message: error.message,
