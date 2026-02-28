@@ -4,10 +4,11 @@ const authValidators = require('./auth.validation');
 const authController = require('./auth.controller');
 const { IsAuthenticated } = require("../../shared/middleware/auth.middleware");
 const { BadRequestError } = require("../../shared/utils/ApiError");
-
+const { makeLimiter } = require('../../shared/middleware/ratelimiter');
 
 
 router.post('/login',
+  makeLimiter(15 * 60 * 1000 , 5),
   authValidators.LoginInputValidator(),
   async (req, res) => {
     const tokens = await authController.login(req.body);
@@ -16,6 +17,8 @@ router.post('/login',
 );
 
 router.post('/register',
+  makeLimiter(15 * 60 * 1000 , 5),
+
   authValidators.RegisterInputValidator(),
   async (req, res) => {
     const user = await authController.register(req.body);
@@ -24,6 +27,8 @@ router.post('/register',
 );
 
 router.post('/refresh',
+  makeLimiter(15 * 60 * 1000 , 5),
+
   authValidators.RefreshInputValidator(),
   async (req, res) => {
     return res.json({
@@ -32,6 +37,7 @@ router.post('/refresh',
   }
 );
 router.post('/logout', IsAuthenticated(),
+  makeLimiter(15 * 60 * 1000 , 5),
   async (req, res) => {
     await authController.logout(req.user._id);
     res.sendStatus(200);
@@ -39,6 +45,8 @@ router.post('/logout', IsAuthenticated(),
 );
 
 router.get('/verify',
+  makeLimiter(15 * 60 * 1000 , 5),
+
   async (req, res) => {
     const { token } = req.query;
     if (!token) throw new BadRequestError({ "type": "missing_token" });

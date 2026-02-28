@@ -35,6 +35,10 @@ const envSchema = Joi.object({
   CLOUDINARY_CLOUD_NAME: Joi.string().required().description('Cloudinary cloud name'),
   CLOUDINARY_API_KEY: Joi.string().required().description('Cloudinary API key'),
   CLOUDINARY_API_SECRET: Joi.string().required().description('Cloudinary API secret'),
+
+  LOGGER_ENABLED: Joi.boolean().default(true),
+  LOGGER_LEVEL: Joi.string().valid('debug', 'info', 'warn', 'error'),
+
 }).unknown();
 
 const { value: envVars, error } = envSchema.validate(process.env, {
@@ -72,6 +76,10 @@ const config = {
     apiKey: envVars.CLOUDINARY_API_KEY,
     apiSecret: envVars.CLOUDINARY_API_SECRET,
   },
+  logger: {
+    enabled: envVars.LOGGER_ENABLED,
+    level: envVars.LOGGER_LEVEL,
+  }
 };
 
 module.exports = config;
