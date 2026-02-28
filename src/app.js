@@ -42,10 +42,14 @@ const corsOptions = {
   maxAge: 86400,
 };
 app.use(cors(corsOptions));
-app.use(pinoHttp({ logger }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(pinoHttp({ logger }));
+
+//add rate limi
+app.use(require('./shared/middleware/ratelimiter').limiter);
+
 app.use(bodyParserErrorHandler());
 app.use(require('./routes'));
 app.get('/', (req, res) => res.send('API is running'));
