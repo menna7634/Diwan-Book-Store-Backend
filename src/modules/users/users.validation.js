@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const { BadRequestError } = require('../../shared/utils/ApiError');
+const { password } = require('../../shared/utils/validators');
 
 const UpdateProfileInputValidator = function () {
   const schema = Joi.object({
@@ -13,6 +14,12 @@ const UpdateProfileInputValidator = function () {
       country: Joi.string().trim(),
       zipCode: Joi.string().trim(),
     }).optional(),
+    password: password.optional(),
+    oldPassword: password.when('password', {
+      is: Joi.exist(),
+      then: Joi.required(),
+      otherwise: Joi.optional()
+    }),
   }).required();
   return async (req, res, next) => {
 
