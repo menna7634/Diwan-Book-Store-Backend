@@ -43,16 +43,40 @@ const RefreshInputValidator = function () {
     refresh_token: Joi.string().required()
   }).required();
   return async (req, res, next) => {
-    const {error, value} = schema.validate(req.body);
+    const {error, value} = schema.validate(req.body, { abortEarly: false });
     if(error) throw new BadRequestError(error.details);
     req.body = value;
     next();
   };
 };
 
-
+const ForgetPasswordValidator = function () {
+  const schema = Joi.object({
+    email: Joi.string().email().required()
+  }).required();
+  return async (req, res, next) => {
+    const {error, value} = schema.validate(req.body);
+    if(error) throw new BadRequestError(error.details);
+    req.body = value;
+    next();
+  };
+};
+const resetPasswordValidator = function () {
+  const schema = Joi.object({
+    password: password.required(),
+    token: Joi.string().required(),
+  }).required();
+  return async (req, res, next) => {
+    const {error, value} = schema.validate(req.body, { abortEarly: false });
+    if(error) throw new BadRequestError(error.details);
+    req.body = value;
+    next();
+  };
+};
 module.exports = {
   LoginInputValidator,
   RegisterInputValidator,
   RefreshInputValidator,
+  ForgetPasswordValidator,
+  resetPasswordValidator
 };
