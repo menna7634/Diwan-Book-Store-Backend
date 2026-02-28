@@ -41,6 +41,44 @@ const login = async ({ email, password }) => {
 
 };
 
+const forgetPassword = async ({ email }) => {
+  const user = await User.findOne({ email: email }).select('+password');
+  if (!user) return ;
+  // check if email is verified
+  const userAuth = await UserAuth.findOne({ user: user._id });
+  if (!userAuth.is_verified) return ;
+
+  // create rest password token
+  const jwtPayLoad = {
+    id: user._id,
+    email: user.email,
+    version: user.password.slice(-10),
+  };
+  const token = jwt.sign(jwtPayLoad, config.jwt.secret, {
+    expiresIn: config.jwt.accessExpirationMinutes + 'm'
+  });
+  userAuth.reset_password_token = token;
+  await userAuth.save();
+  return token;
+};
+
+const resetPassword = async ({ password, token }) => {
+  let payload;
+  try {
+    payload = jwt.verify(token, config.jwt.secret);
+    const user = await User.findById(payload.id).select("+password");
+    if (!user) throw new BadRequestError("User not found");
+    if(user.password.slice(-10) !== payload.version) throw new UnauthorizedError("Outdated token");
+
+    user.password = password;
+    await user.save();
+    return user;
+  } catch (e) {
+    if (e.name === 'TokenExpiredError') throw new UnauthorizedError("Link expired");
+    throw e;
+  }
+};
+
 const register = async (userData) => {
   //make a transaction
   const session = await mongoose.startSession();
@@ -72,7 +110,7 @@ const register = async (userData) => {
     };
 
     const verificationToken = jwt.sign(verifcationTokenPayload, config.jwt.secret,
-      { expiresIn: config.emailVerification.tokenExpirationHours+"h", }
+      { expiresIn: config.emailVerification.tokenExpirationHours + "h", }
     );
     userAuth.verification_token = verificationToken;
     await userAuth.save();
@@ -137,4 +175,6 @@ module.exports = {
   refreshAccessToken,
   logout,
   verifyEmail,
+  forgetPassword,
+  resetPassword,
 };
