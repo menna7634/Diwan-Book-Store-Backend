@@ -1,0 +1,21 @@
+meta {
+  name: increaseItemQuantity
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{base_url}}/cart/items/:bookId/increase
+  body: json
+  auth: inherit
+}
+
+params:path {
+  bookId: BOOK_ID
+}
+
+body:json {
+  {
+    "step": 1
+  }
+}

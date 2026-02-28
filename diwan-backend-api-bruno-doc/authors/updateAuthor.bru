@@ -1,0 +1,22 @@
+meta {
+  name: updateAuthor
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{base_url}}/authors/:id
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: AUTHOR_ID
+}
+
+body:json {
+  {
+    "name": "Updated Author Name",
+    "bio": "Updated biography text."
+  }
+}

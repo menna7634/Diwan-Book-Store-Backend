@@ -1,0 +1,22 @@
+meta {
+  name: createBook
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/books
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "author_id": "AUTHOR_ID",
+    "categories": ["CATEGORY_ID"],
+    "book_title": "The Great Gatsby",
+    "description": "A classic novel set in the Jazz Age.",
+    "price": 24.99,
+    "stock": 50
+  }
+}

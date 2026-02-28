@@ -1,0 +1,23 @@
+meta {
+  name: updateBook
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{base_url}}/books/:id
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: BOOK_ID
+}
+
+body:json {
+  {
+    "book_title": "Updated Book Title",
+    "price": 29.99,
+    "stock": 100
+  }
+}

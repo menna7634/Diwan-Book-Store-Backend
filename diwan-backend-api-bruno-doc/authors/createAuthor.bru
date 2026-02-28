@@ -1,0 +1,18 @@
+meta {
+  name: createAuthor
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/authors
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Naguib Mahfouz",
+    "bio": "Egyptian writer who won the 1988 Nobel Prize in Literature."
+  }
+}

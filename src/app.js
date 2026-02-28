@@ -22,10 +22,10 @@ const helmetOptions = {
   // CRITICAL for APIs: ensures the mobile app/frontend always uses HTTPS
   hsts: config.env
     ? {
-        maxAge: 31536000,
-        includeSubDomains: true,
-        preload: true,
-      }
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true,
+    }
     : false,
 
   // 4. Frameguard

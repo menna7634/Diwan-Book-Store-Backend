@@ -1,0 +1,23 @@
+meta {
+  name: updateOrderStatus
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{base_url}}/order/:orderId
+  body: json
+  auth: inherit
+}
+
+params:path {
+  orderId: ORDER_ID
+}
+
+body:json {
+  {
+    "order_status": "processing",
+    "payment_status": "paid",
+    "note": "Payment confirmed, preparing shipment."
+  }
+}

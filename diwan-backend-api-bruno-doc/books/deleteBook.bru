@@ -1,0 +1,15 @@
+meta {
+  name: deleteBook
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{base_url}}/books/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: BOOK_ID
+}

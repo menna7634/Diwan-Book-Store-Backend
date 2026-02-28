@@ -1,0 +1,15 @@
+meta {
+  name: removeItem
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{base_url}}/cart/items/:bookId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  bookId: BOOK_ID
+}
