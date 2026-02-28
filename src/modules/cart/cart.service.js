@@ -19,9 +19,14 @@ const findItemIndex = (cart, bookId) =>
 
 const getCart = async (userId) => {
   const cart = await getOrCreateCart(userId);
-  return cart;
-};
 
+  const total = cart.items.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+
+  return { cart, total };
+};
 const addItem = async (userId, { bookId, quantity, price }) => {
   const cart = await getOrCreateCart(userId);
   const idx = findItemIndex(cart, bookId);

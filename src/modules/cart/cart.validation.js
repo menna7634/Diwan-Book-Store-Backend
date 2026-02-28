@@ -1,4 +1,4 @@
-const BadRequestError = require('../../shared/utils/ApiError');
+const { BadRequestError } = require('../../shared/utils/ApiError');
 const Joi = require('joi');
 
 const mongoId = Joi.string()
@@ -8,13 +8,16 @@ const mongoId = Joi.string()
 const validate = (schema, target = 'body') => {
   return async (req, res, next) => {
     const { error, value } = schema.validate(req[target], {
-      aboutEarly: false,
+      abortEarly: false,
     });
-    if (error) throw new BadRequestError(error.details);
-    req[target] = value;
+
+    if (error) {
+      return next(new BadRequestError(error.details));
+    }
     next();
   };
 };
+
 const GetCartValidator = () =>
   validate(
     Joi.object({

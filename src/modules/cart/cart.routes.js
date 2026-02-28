@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('./cart.controller');
+const { IsAuthenticated } = require('../../shared/middleware/auth.middleware');
 const {
   GetCartValidator,
   AddItemValidator,
@@ -8,31 +9,41 @@ const {
   ChangeStepValidator,
   BookIdParamValidator,
 } = require('./cart.validation');
-//const { authenticate } = require('../../middleware/auth');
 
-//router.use(authenticate);
-
-router.get('/', GetCartValidator(), controller.getCart);
-router.post('/items', AddItemValidator(), controller.addItem);
+router.get('/', IsAuthenticated(), GetCartValidator(), controller.getCart);
+router.post(
+  '/items',
+  IsAuthenticated(),
+  AddItemValidator(),
+  controller.addItem
+);
 router.patch(
   '/items/:bookId',
+  IsAuthenticated,
   BookIdParamValidator(),
   SetQuantityValidator(),
   controller.setQuantity
 );
 router.patch(
   '/items/:bookId/increase',
+  IsAuthenticated(),
   BookIdParamValidator(),
   ChangeStepValidator(),
   controller.increaseQuantity
 );
 router.patch(
   '/items/:bookId/decrease',
+  IsAuthenticated(),
   BookIdParamValidator(),
   ChangeStepValidator(),
   controller.decreaseQuantity
 );
-router.delete('/items/:bookId', BookIdParamValidator(), controller.removeItem);
-router.delete('/', controller.clearCart);
+router.delete(
+  '/items/:bookId',
+  IsAuthenticated(),
+  BookIdParamValidator(),
+  controller.removeItem
+);
+router.delete('/', IsAuthenticated(), controller.clearCart);
 
 module.exports = router;
