@@ -3,54 +3,56 @@ const Cart = require('../../database/models/cart.model');
 const Book = require('../../database/models/book.model');
 const { withTransaction } = require('../../shared/utils/transaction');
 const { paginate } = require('../../shared/utils/pagination');
+const {
+  BadRequestError,
+  NotFoundError,
+} = require('../../shared/utils/ApiError');
 
 const placeOrder = async (userId, { payment_method, shipping_details }) => {
-  return withTransaction(async (session) => {
-    const cart = await Cart.findOne({ user_id: userId }).session(session);
-    if (!cart || cart.items.length === 0) {
-      throw new BadRequestError('Cart is empty');
-    }
-
-    // Fetch all books in one query
-    const bookIds = cart.items.map((item) => item.book_id);
-    const books = await Book.find({ _id: { $in: bookIds } }).session(session);
-
-    const orderBooks = [];
-
-    for (const item of cart.items) {
-      const book = books.find(
-        (b) => b._id.toString() === item.book_id.toString()
-      );
-
-      if (!book) {
-        throw new NotFoundError(`Book ${item.book_id} not found`);
+  return withTransaction(async () => {
+    try {
+      const cart = await Cart.findOne({ user_id: userId });
+      console.log('🔵 cart:', cart);
+      if (!cart || cart.items.length === 0) {
+        throw new BadRequestError('Cart is empty');
       }
 
-      // decrease stock by guantity
-      const updated = await Book.updateOne(
-        { _id: book._id, stock: { $gte: item.quantity } },
-        { $inc: { stock: -item.quantity } },
-        { session }
-      );
+      const bookIds = cart.items.map((item) => item.book_id);
+      console.log('🔵 bookIds:', bookIds);
+      const books = await Book.find({ _id: { $in: bookIds } });
+      console.log('🔵 books found:', books.length);
 
-      if (updated.modifiedCount === 0) {
-        throw new BadRequestError(
-          `Insufficient stock for "${book.book_title}".`
+      const orderBooks = [];
+      for (const item of cart.items) {
+        const book = books.find(
+          (b) => b._id.toString() === item.book_id.toString()
         );
+        console.log('🔵 matching book:', book?.book_title);
+        if (!book) throw new NotFoundError(`Book ${item.book_id} not found`);
+
+        const updated = await Book.updateOne(
+          { _id: book._id, stock: { $gte: item.quantity } },
+          { $inc: { stock: -item.quantity } }
+        );
+        console.log('🔵 stock update:', updated.modifiedCount);
+        if (updated.modifiedCount === 0) {
+          throw new BadRequestError(
+            `Insufficient stock for "${book.book_title}".`
+          );
+        }
+
+        orderBooks.push({
+          book_id: book._id,
+          name: book.book_title,
+          quantity: item.quantity,
+          price: item.price,
+        });
       }
-      orderBooks.push({
-        book_id: book._id,
-        name: book.book_title,
-        quantity: item.quantity,
-        price: item.price,
-      });
-    }
 
-    const payment_status =
-      payment_method === 'cash_on_delivery' ? 'pending' : 'paid';
-
-    const [order] = await Order.create(
-      [
+      console.log('🔵 creating order...');
+      const payment_status =
+        payment_method === 'cash_on_delivery' ? 'pending' : 'paid';
+      const [order] = await Order.create([
         {
           user_id: userId,
           payment_method,
@@ -58,17 +60,19 @@ const placeOrder = async (userId, { payment_method, shipping_details }) => {
           shipping_details,
           books: orderBooks,
         },
-      ],
-      { session }
-    );
+      ]);
+      console.log('🟢 order created:', order._id);
 
-    cart.items = [];
-    await cart.save({ session });
-
-    return order;
+      cart.items = [];
+      await cart.save();
+      return order;
+    } catch (err) {
+      console.error('🔴 placeOrder error:', err.message, err.stack);
+      throw err;
+    }
   });
 };
-// get orders for the user
+
 const getMyOrders = async (userId, query) => {
   return paginate(
     Order,
@@ -81,7 +85,7 @@ const getMyOrders = async (userId, query) => {
     }
   );
 };
-// if admin --> access any user by id , for user --> access only his order
+
 const getOrderById = async (orderId, userId, isAdmin) => {
   const filter = isAdmin ? { _id: orderId } : { _id: orderId, user_id: userId };
 
@@ -96,7 +100,6 @@ const getOrderById = async (orderId, userId, isAdmin) => {
 };
 
 const getAllOrders = async (query) => {
-  // for admin
   return paginate(
     Order,
     {},
@@ -104,33 +107,24 @@ const getAllOrders = async (query) => {
       page: query.page,
       limit: query.limit,
       sort: '-createdAt',
-
-      populate: [
-        {
-          path: 'user_id',
-        },
-        {
-          path: 'books.book_id',
-        },
-      ],
+      populate: [{ path: 'user_id' }, { path: 'books.book_id' }],
     }
   );
 };
 
 const STATUS_TRANSITIONS = {
   order: {
-    placed: ['processing'], // order just created
-    processing: ['shipped', 'cancelled'], // order being prepared(shipped or cancelled)
-    shipped: ['delivered'], // shipped and customer received
-    delivered: [], // terminal state
-    cancelled: [], // terminal state
+    placed: ['processing'],
+    processing: ['shipped', 'cancelled'],
+    shipped: ['delivered'],
+    delivered: [],
+    cancelled: [],
   },
-
   payment: {
-    pending: ['paid', 'failed'], // waiting for payment
-    paid: ['refunded'], // paid  (refund allowed)
-    failed: [], // payment failed
-    refunded: [], // terminal refund
+    pending: ['paid', 'failed'],
+    paid: ['refunded'],
+    failed: [],
+    refunded: [],
   },
 };
 
@@ -148,14 +142,9 @@ const updateOrderStatus = async (
         `Cannot transition order status from "${order.order_status}" to "${order_status}"`
       );
     }
-
     order.order_status = order_status;
-
     if (note) {
-      order.order_history.push({
-        status: order_status,
-        note,
-      });
+      order.order_history.push({ status: order_status, note });
     }
   }
 
@@ -166,7 +155,6 @@ const updateOrderStatus = async (
         `Cannot transition payment status from "${order.payment_status}" to "${payment_status}"`
       );
     }
-
     order.payment_status = payment_status;
   }
 
