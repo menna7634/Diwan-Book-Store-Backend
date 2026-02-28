@@ -24,7 +24,7 @@ const updateUser = async (email, updates) => {
     const isPasswordValid = await bcrypt.compare(oldPassword, this.password);
     if (!isPasswordValid) throw new UnauthorizedError("old password is incorrect");
     
-    user.password = await bcrypt.hash(password, 10);
+    user.password = password;
     await user.save();
   }
   
