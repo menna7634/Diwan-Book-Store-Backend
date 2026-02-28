@@ -57,6 +57,7 @@ const shippingSchema = new mongoose.Schema(
       required: [true, 'Country is required'],
       trim: true,
     },
+    zipCode: { type: String, trim: true },
   },
   { _id: false }
 );
@@ -121,7 +122,6 @@ orderSchema.pre('save', async function () {
     (sum, item) => sum + item.price * item.quantity,
     0
   );
-
   if (this.isModified('order_status')) {
     this.order_history.push({ status: this.order_status });
     if (this.order_status === 'delivered') this.time_delivered = new Date();

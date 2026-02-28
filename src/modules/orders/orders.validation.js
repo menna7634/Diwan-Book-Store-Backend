@@ -1,4 +1,5 @@
-const {BadRequestError} = require('../../shared/utils/ApiError');
+
+const { BadRequestError } = require('../../shared/utils/ApiError');
 const Joi = require('joi');
 
 const mongoId = Joi.string()
@@ -8,9 +9,9 @@ const mongoId = Joi.string()
 const validate = (schema, target = 'body') => {
   return async (req, res, next) => {
     const { error, value } = schema.validate(req[target], {
-      aboutEarly: false,
+      abortEarly: false,
     });
-    if (error) throw new BadRequestError(error.details);
+    if (error) return next(new BadRequestError(error.details));
     req[target] = value;
     next();
   };
@@ -29,7 +30,7 @@ const PlaceOrderValidator = () =>
         city: Joi.string().trim().required(),
         state: Joi.string().trim(),
         country: Joi.string().trim().required(),
-        zipCode: Joi.string().trim().required(),
+        zipCode: Joi.string().trim(),
       }).required(),
     })
   );
@@ -50,6 +51,7 @@ const OrderIdParamValidator = () =>
     }),
     'params'
   );
+
 const UpdateOrderStatusValidator = () =>
   validate(
     Joi.object({
@@ -66,7 +68,7 @@ const UpdateOrderStatusValidator = () =>
         'refunded'
       ),
       note: Joi.string().trim().max(500),
-    }).or('order_status', 'payment_status') // at least one must be present
+    }).or('order_status', 'payment_status')
   );
 
 module.exports = {
