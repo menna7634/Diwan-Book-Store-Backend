@@ -25,6 +25,11 @@ const bookSchema = new mongoose.Schema(
       minlength: [1, 'Book title cannot be empty'],
       maxlength: [300, 'Book title cannot exceed 300 characters'],
     },
+    description: {
+      type: String,
+      trim: true,
+      maxlength: [2000, 'Description cannot exceed 2000 characters'],
+    },
     book_cover_url: {
       type: String,
       trim: true,
