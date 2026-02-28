@@ -24,12 +24,22 @@ const PlaceOrderValidator = () =>
         .default('cash_on_delivery'),
       shipping_details: Joi.object({
         fullName: Joi.string().trim().required(),
-        phone: Joi.string().trim(),
+        phone: Joi.string()
+          .pattern(/^(010|011|012)\d{8}$/)
+          .trim()
+          .required()
+          .messages({
+            'string.pattern.base':
+              'Phone must be 11 digits starting with 010, 011, or 012',
+          }),
         street: Joi.string().trim().required(),
         city: Joi.string().trim().required(),
         state: Joi.string().trim(),
         country: Joi.string().trim().required(),
-        zipCode: Joi.string().trim(),
+        zipCode: Joi.string()
+          .pattern(/^\d+$/)
+          .trim()
+          .messages({ 'string.pattern.base': 'Zip code must be numbers only' }),
       }).required(),
     })
   );
@@ -39,6 +49,21 @@ const GetOrdersValidator = () =>
     Joi.object({
       page: Joi.number().integer().min(1).default(1),
       limit: Joi.number().integer().min(1).max(100).default(10),
+      order_status: Joi.string().valid(
+        'placed',
+        'processing',
+        'shipped',
+        'delivered',
+        'cancelled'
+      ),
+      payment_status: Joi.string().valid(
+        'pending',
+        'paid',
+        'failed',
+        'refunded'
+      ),
+      from: Joi.date().iso(),
+      to: Joi.date().iso(),
     }),
     'query'
   );

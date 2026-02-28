@@ -44,7 +44,6 @@ const shippingSchema = new mongoose.Schema(
       required: [true, 'Full name is required'],
       trim: true,
     },
-    phone: { type: String, trim: true },
     street: {
       type: String,
       required: [true, 'Street is required'],
@@ -57,7 +56,19 @@ const shippingSchema = new mongoose.Schema(
       required: [true, 'Country is required'],
       trim: true,
     },
-    zipCode: { type: String, trim: true },
+    zipCode: {
+      type: String,
+      match: [/^\d+$/, 'Zip code must be numbers only'],
+      trim: true,
+    },
+    phone: {
+      type: String,
+      match: [
+        /^(010|011|012)\d{8}$/,
+        'Phone must be 11 digits starting with 010, 011, or 012',
+      ],
+      trim: true,
+    },
   },
   { _id: false }
 );

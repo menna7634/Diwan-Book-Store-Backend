@@ -12,29 +12,24 @@ const placeOrder = async (userId, { payment_method, shipping_details }) => {
   return withTransaction(async () => {
     try {
       const cart = await Cart.findOne({ user_id: userId });
-      console.log('🔵 cart:', cart);
       if (!cart || cart.items.length === 0) {
         throw new BadRequestError('Cart is empty');
       }
 
       const bookIds = cart.items.map((item) => item.book_id);
-      console.log('🔵 bookIds:', bookIds);
       const books = await Book.find({ _id: { $in: bookIds } });
-      console.log('🔵 books found:', books.length);
 
       const orderBooks = [];
       for (const item of cart.items) {
         const book = books.find(
           (b) => b._id.toString() === item.book_id.toString()
         );
-        console.log('🔵 matching book:', book?.book_title);
         if (!book) throw new NotFoundError(`Book ${item.book_id} not found`);
 
         const updated = await Book.updateOne(
           { _id: book._id, stock: { $gte: item.quantity } },
           { $inc: { stock: -item.quantity } }
         );
-        console.log('🔵 stock update:', updated.modifiedCount);
         if (updated.modifiedCount === 0) {
           throw new BadRequestError(
             `Insufficient stock for "${book.book_title}".`
@@ -49,7 +44,6 @@ const placeOrder = async (userId, { payment_method, shipping_details }) => {
         });
       }
 
-      console.log('🔵 creating order...');
       const payment_status =
         payment_method === 'cash_on_delivery' ? 'pending' : 'paid';
       const [order] = await Order.create([
@@ -61,13 +55,11 @@ const placeOrder = async (userId, { payment_method, shipping_details }) => {
           books: orderBooks,
         },
       ]);
-      console.log('🟢 order created:', order._id);
 
       cart.items = [];
       await cart.save();
       return order;
     } catch (err) {
-      console.error('🔴 placeOrder error:', err.message, err.stack);
       throw err;
     }
   });
@@ -100,16 +92,21 @@ const getOrderById = async (orderId, userId, isAdmin) => {
 };
 
 const getAllOrders = async (query) => {
-  return paginate(
-    Order,
-    {},
-    {
-      page: query.page,
-      limit: query.limit,
-      sort: '-createdAt',
-      populate: [{ path: 'user_id' }, { path: 'books.book_id' }],
-    }
-  );
+  const filter = {};
+  if (query.order_status) filter.order_status = query.order_status;
+  if (query.payment_status) filter.payment_status = query.payment_status;
+  if (query.from || query.to) {
+    filter.createdAt = {};
+    if (query.from) filter.createdAt.$gte = new Date(query.from);
+    if (query.to) filter.createdAt.$lte = new Date(query.to);
+  }
+
+  return paginate(Order, filter, {
+    page: query.page,
+    limit: query.limit,
+    sort: '-createdAt',
+    populate: [{ path: 'user_id' }, { path: 'books.book_id' }],
+  });
 };
 
 const STATUS_TRANSITIONS = {
@@ -143,9 +140,7 @@ const updateOrderStatus = async (
       );
     }
     order.order_status = order_status;
-    if (note) {
-      order.order_history.push({ status: order_status, note });
-    }
+    if (note) order.order_history.push({ status: order_status, note });
   }
 
   if (payment_status) {
@@ -159,9 +154,12 @@ const updateOrderStatus = async (
   }
 
   await order.save();
-  return order;
-};
 
+  return Order.findById(order._id).populate(
+    'user_id',
+    'firstname lastname email'
+  );
+};
 module.exports = {
   placeOrder,
   getMyOrders,
