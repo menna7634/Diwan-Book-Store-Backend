@@ -1,5 +1,6 @@
 const config = require('../config');
 const nodemailer = require('nodemailer');
+const logger = require('../utils/logger').child({module: "mail.service"});
 
 class MailService {
   constructor() {
@@ -34,10 +35,10 @@ class MailService {
 
     try {
       const result = await this.transporter.sendMail(mailOptions);
-      console.log("Email sent successfully:", result.messageId);
+      logger.info({result}, "Email sent successfully:");
       return result;
     } catch (error) {
-      console.error("Gmail SMTP Error:", error);
+      logger.error({error}, "Failed to send verifcation email");
     }
   }
 }
