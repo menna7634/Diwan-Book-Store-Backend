@@ -3,14 +3,15 @@ const catchAsync = require('../../shared/utils/catchAsync');
 const cartService = require('./cart.service');
 
 const getCart = catchAsync(async (req, res) => {
-  const cart = await cartService.getCart(req.user._id);
+  const { cart, total } = await cartService.getCart(req.user._id);
+
   const paginated = paginateArray(cart.items, req.query);
 
   res.json({
     status: 'success',
     data: {
       ...paginated,
-      total: cart.total,
+      total,
     },
   });
 });
