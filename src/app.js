@@ -6,10 +6,9 @@ const logger = require('./shared/utils/logger');
 const { WebError } = require('./shared/utils/ApiError');
 const config = require('./shared/config');
 const helmet = require('helmet');
-
+const path = require('path');
 const app = express();
 app.set('etag', false);
-// helmet for scp (these config were AI generated)
 const helmetOptions = {
   // 1. Disable CSP if you aren't serving HTML/Assets
   // This prevents overhead and "Refused to execute script" errors in browsers
@@ -17,26 +16,28 @@ const helmetOptions = {
 
   // 2. Cross-Origin Resource Policy
   // Prevents other sites from reading your API responses in certain contexts
-  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
 
   // 3. Strict Transport Security (HSTS)
   // CRITICAL for APIs: ensures the mobile app/frontend always uses HTTPS
-  hsts: config.env ? {
-    maxAge: 31536000,
-    includeSubDomains: true,
-    preload: true
-  } : false,
+  hsts: config.env
+    ? {
+        maxAge: 31536000,
+        includeSubDomains: true,
+        preload: true,
+      }
+    : false,
 
   // 4. Frameguard
   // Even for APIs, this prevents your JSON from being loaded in an iframe
-  frameguard: { action: "deny" },
+  frameguard: { action: 'deny' },
 };
 app.use(helmet(helmetOptions));
 
 // cors for cors
 
 const corsOptions = {
-  origin: config.frontendUrl, // Use an environment variable!
+  origin: config.frontendUrl,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma'],
   credentials: true,
@@ -53,7 +54,15 @@ app.use(require('./shared/middleware/ratelimiter').limiter);
 
 app.use(bodyParserErrorHandler());
 app.use(require('./routes'));
-app.get('/', (req, res) => res.send('API is running'));
+//app.get('/', (req, res) => res.send('API is running'));
+
+// Serve Angular files
+app.use(express.static(path.join(__dirname, '../public')));
+
+// Angular fallback
+app.get('/{*path}', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
+});
 
 // eslint-disable-next-line no-unused-vars
 app.use((error, req, res, next) => {
