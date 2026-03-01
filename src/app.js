@@ -37,7 +37,10 @@ app.use(helmet(helmetOptions));
 // cors for cors
 
 const corsOptions = {
-  origin: config.frontendUrl,
+  origin: [
+    config.frontendUrl,
+    'https://diwan-online-book-store-frontend.vercel.app',
+  ],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma'],
   credentials: true,
@@ -49,12 +52,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(pinoHttp({ logger }));
 
-//add rate limi
+//add rate limit
 app.use(require('./shared/middleware/ratelimiter').limiter);
 
 app.use(bodyParserErrorHandler());
 app.use(require('./routes'));
-//app.get('/', (req, res) => res.send('API is running'));
+app.get('/', (req, res) => res.send('API is running'));
 
 /*Serve Angular files
 app.use(express.static(path.join(__dirname, '../public')));
