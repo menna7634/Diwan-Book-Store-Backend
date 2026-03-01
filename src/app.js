@@ -59,15 +59,6 @@ app.use(bodyParserErrorHandler());
 app.use(require('./routes'));
 app.get('/', (req, res) => res.send('API is running'));
 
-/*Serve Angular files
-app.use(express.static(path.join(__dirname, '../public')));
-
-// Angular fallback
-app.get('/{*path}', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
-});
-*/
-
 // eslint-disable-next-line no-unused-vars
 app.use((error, req, res, next) => {
   if (error instanceof WebError) {
