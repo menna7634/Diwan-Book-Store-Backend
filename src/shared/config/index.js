@@ -12,7 +12,6 @@ const envSchema = Joi.object({
 
   MONGODB_URL: Joi.string().required().description('MongoDB connection string'),
   FRONTEND_URL: Joi.string().default('http://localhost:4200'),
-
   JWT_SECRET: Joi.string().min(10).required().description('JWT secret key'),
 
   JWT_ACCESS_EXPIRATION_MINUTES: Joi.number().default(30),
@@ -24,21 +23,24 @@ const envSchema = Joi.object({
   MAIL_GMAIL_USER: Joi.string().when('ENABLE_EMAIL_VERIFICATION', {
     is: true,
     then: Joi.required(),
-    otherwise: Joi.optional()
+    otherwise: Joi.optional(),
   }),
 
   MAIL_APP_PASSWORD: Joi.string().when('ENABLE_EMAIL_VERIFICATION', {
     is: true,
     then: Joi.required(),
-    otherwise: Joi.optional()
+    otherwise: Joi.optional(),
   }),
-  CLOUDINARY_CLOUD_NAME: Joi.string().required().description('Cloudinary cloud name'),
+  CLOUDINARY_CLOUD_NAME: Joi.string()
+    .required()
+    .description('Cloudinary cloud name'),
   CLOUDINARY_API_KEY: Joi.string().required().description('Cloudinary API key'),
-  CLOUDINARY_API_SECRET: Joi.string().required().description('Cloudinary API secret'),
+  CLOUDINARY_API_SECRET: Joi.string()
+    .required()
+    .description('Cloudinary API secret'),
 
   LOGGER_ENABLED: Joi.boolean().default(true),
   LOGGER_LEVEL: Joi.string().valid('debug', 'info', 'warn', 'error'),
-
 }).unknown();
 
 const { value: envVars, error } = envSchema.validate(process.env, {
@@ -79,7 +81,7 @@ const config = {
   logger: {
     enabled: envVars.LOGGER_ENABLED,
     level: envVars.LOGGER_LEVEL,
-  }
+  },
 };
 
 module.exports = config;

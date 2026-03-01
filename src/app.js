@@ -22,10 +22,10 @@ const helmetOptions = {
   // CRITICAL for APIs: ensures the mobile app/frontend always uses HTTPS
   hsts: config.env
     ? {
-      maxAge: 31536000,
-      includeSubDomains: true,
-      preload: true,
-    }
+        maxAge: 31536000,
+        includeSubDomains: true,
+        preload: true,
+      }
     : false,
 
   // 4. Frameguard
@@ -56,13 +56,14 @@ app.use(bodyParserErrorHandler());
 app.use(require('./routes'));
 //app.get('/', (req, res) => res.send('API is running'));
 
-// Serve Angular files
+/*Serve Angular files
 app.use(express.static(path.join(__dirname, '../public')));
 
 // Angular fallback
 app.get('/{*path}', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
+*/
 
 // eslint-disable-next-line no-unused-vars
 app.use((error, req, res, next) => {
